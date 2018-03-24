@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 别名 以及MyBatis中的一些相关的设置需要在该文件中编写 -->
+    <typeAliases>
+        <!-- 定义单个别名 -->
+        <!-- <typeAlias type="com.suniceman.vo.Product" alias="product"/> -->
+        <!-- 扫描包，将该包下所有的类取上别名，别名就和类名相同(忽略大小写，建议在使用别名时就使用类名) -->
+        <package name="com.suniceman.po" />
+        <package name="com.suniceman.vo" />
+    </typeAliases>
+
+    <!-- 数据源交由spring容器来管理 -->
+
+    <!-- 交给spring容器来管理mapper对象 -->
+    <!--<mappers> <mapper/> </mappers> -->
+</configuration>

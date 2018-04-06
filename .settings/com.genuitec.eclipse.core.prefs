@@ -1,3 +1,3 @@
 eclipse.preferences.version=1
-validator.Checked=WebRoot/static
+validator.Checked=WebRoot/static,WebRoot/json,WebRoot/dist,WebRoot/js
 validator.Unchecked=

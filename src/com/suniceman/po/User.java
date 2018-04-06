@@ -4,34 +4,20 @@ import java.io.Serializable;
 
 public class User implements Serializable {
     
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private int id;
-    private int fgid;
+    private String username;
+    private String password;
+    private String email;
     private String sign;
     private String avatar;
-    private String username;
-    
-    public int getFgid() {
-        return fgid;
-    }
-    
-    public void setFgid(int fgid) {
-        this.fgid = fgid;
-    }
-    
-    public User() {
-        
-    }
-    
-    public User(int id, String username, String sign, String avatar) {
-        this.id = id;
-        this.username = username;
-        this.sign = sign;
-        this.avatar = avatar;
-    }
+    private double money;
+    private String questionOne;
+    private String questionTwo;
+    private String questionThree;
+    private String createdTime;
+    private String status;
+    private int roleId;
     
     public int getId() {
         return id;
@@ -41,12 +27,16 @@ public class User implements Serializable {
         this.id = id;
     }
     
-    public String getSign() {
-        return sign;
+    public String getUsername() {
+        return username;
     }
     
-    public void setSign(String sign) {
-        this.sign = sign;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    public String getPassword() {
+        return password;
     }
     
     public String getAvatar() {
@@ -57,11 +47,80 @@ public class User implements Serializable {
         this.avatar = avatar;
     }
     
-    public String getUsername() {
-        return username;
+    public void setPassword(String password) {
+        this.password = password;
     }
     
-    public void setUsername(String username) {
-        this.username = username;
+    public String getEmail() {
+        return email;
     }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public String getSign() {
+        return sign;
+    }
+    
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
+    
+    public double getMoney() {
+        return money;
+    }
+    
+    public void setMoney(double money) {
+        this.money = money;
+    }
+    
+    public String getQuestionOne() {
+        return questionOne;
+    }
+    
+    public void setQuestionOne(String questionOne) {
+        this.questionOne = questionOne;
+    }
+    
+    public String getQuestionTwo() {
+        return questionTwo;
+    }
+    
+    public void setQuestionTwo(String questionTwo) {
+        this.questionTwo = questionTwo;
+    }
+    
+    public String getQuestionThree() {
+        return questionThree;
+    }
+    
+    public void setQuestionThree(String questionThree) {
+        this.questionThree = questionThree;
+    }
+    
+    public String getCreatedTime() {
+        return createdTime;
+    }
+    
+    public void setCreatedTime(String createdTime) {
+        this.createdTime = createdTime;
+    }
+    
+    public int getRoleId() {
+        return roleId;
+    }
+    
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
+    }
+    
+    public String getStatus() {
+        return status;
+    }
+    
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
 }

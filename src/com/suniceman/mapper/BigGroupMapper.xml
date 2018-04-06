@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suniceman.mapper.BigGroupMapper">
+    <select id="findBigGroupByUserId" parameterType="int" resultType="BigGroup">
+        select 
+        big_group.*
+        from 
+        big_group 
+        INNER JOIN 
+        big_group_user 
+        on big_group.id = big_group_user.bigGroupId 
+        and 
+        big_group_user.userId = #{userId}
+    </select>
+</mapper>

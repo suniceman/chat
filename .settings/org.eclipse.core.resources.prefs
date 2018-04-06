@@ -1,3 +1,6 @@
 eclipse.preferences.version=1
-encoding//WebRoot/static=UTF-8
-encoding//WebRoot/static/layui/css/layui.css=UTF-8
+encoding//WebRoot/dist=UTF-8
+encoding//WebRoot/dist/css/modules/layim/html/getmsg.json=UTF-8
+encoding//WebRoot/json=UTF-8
+encoding//WebRoot/json/getList.json=UTF-8
+encoding//src/com/suniceman/mapper/GroupMapper.xml=UTF-8

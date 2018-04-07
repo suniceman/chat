@@ -27,4 +27,33 @@ public class GroupServiceImpl implements GroupService {
         groupMapper.createDefaultGroup(registUserId);
     }
     
+    @Override
+    public void renameGroup(Group group) {
+        // TODO Auto-generated method stub
+        groupMapper.renameGroup(group);
+    }
+    
+    @Override
+    public void createGroup(Group group) {
+        // TODO Auto-generated method stub
+        groupMapper.createGroup(group);
+    }
+    
+    @Override
+    public Group findById(int parseInt) {
+        // TODO Auto-generated method stub
+        return groupMapper.findById(parseInt);
+    }
+    
+    @Override
+    public void deleteById(int id) {
+        // TODO Auto-generated method stub
+        groupMapper.deleteById(id);
+    }
+    
+    @Override
+    public void deleteFriendsById(int id) {
+        // TODO Auto-generated method stub
+        groupMapper.deleteFriendsById(id);
+    }
 }

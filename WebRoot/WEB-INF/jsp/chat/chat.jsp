@@ -33,7 +33,7 @@ var im = {
                 if(!uid){
                 	location.href="${pageContext.request.contextPath}/user/login.action";
                 }else {
-                    var socketUrl = 'ws://localhost:8080/chat/websocket.action';
+                    var socketUrl = 'ws://localhost:8080/chat/websocket/' + uid;
                     socket = new WebSocket(socketUrl);
                     im.startListener();
                 }
@@ -63,22 +63,17 @@ var im = {
             }
         },
         handleMessage:function (msg) {
-            var msg = JSON.parse(event.data);
-            console.log(msg);
-            switch (msg.type){
-                case 'TYPE_TEXT_MESSAGE':
-                    layim.getMessage(msg.msg);
-                    break;
-                default:
-                    break;
-            }
+            var msg = JSON.parse(msg);
+            console.log(msg[0].msg);
+            layim.getMessage(msg[0].msg);
         }
     };
     
     im.init();
 
-var socket = null;
 layui.use('layim', function(layim){
+  window.layim = layim;
+  $ = layui.jquery;
   //演示自动回复
   var autoReplay = [
     '您好，我现在有事不在，一会再和您联系。', 
@@ -184,11 +179,6 @@ layui.use('layim', function(layim){
     //console.log(data);
   });
   
-  //监听签名修改
-  layim.on('sign', function(value){
-    //console.log(value);
-  });
-
   //监听自定义工具栏点击，以添加代码为例
   layim.on('tool(code)', function(insert){
     layer.prompt({
@@ -219,31 +209,12 @@ layui.use('layim', function(layim){
     layim.addList({
       type: 'friend'
       ,avatar: "http://tp2.sinaimg.cn/2386568184/180/40050524279/0"
-      ,username: '冲田杏梨'
+      ,username: '女孩子'
       ,groupid: 1
       ,id: "1233333312121212"
-      ,remark: "本人冲田杏梨将结束AV女优的工作"
+      ,remark: "工作好开心啊"
     });
     
-    setTimeout(function(){
-      //接受消息（如果检测到该socket）
-      layim.getMessage({
-        username: "Hi"
-        ,avatar: "http://qzapp.qlogo.cn/qzapp/100280987/56ADC83E78CEC046F8DF2C5D0DD63CDE/100"
-        ,id: "10000111"
-        ,type: "friend"
-        ,content: "临时："+ new Date().getTime()
-      });
-      
-      /*layim.getMessage({
-        username: "贤心"
-        ,avatar: "http://tp1.sinaimg.cn/1571889140/180/40030060651/1"
-        ,id: "100001"
-        ,type: "friend"
-        ,content: "嗨，你好！欢迎体验LayIM。演示标记："+ new Date().getTime()
-      });*/
-      
-    }, 3000);
   });
 
   //监听发送消息
@@ -251,26 +222,23 @@ layui.use('layim', function(layim){
     var my = data.mine;
     var message = my.content;
     var To = data.to;
-    if (!window.WebSocket) {
-        //判断是发送好友消息还是群消息
-         if(To.type=="friend"){
-        	 layim.setChatStatus('<span style="color:#FF5722;">对方正在输入。。。</span>');
-             Imwebserver.sendMsg(receiver,message);
-         }else{
-             Imwebserver.sendGroupMsg(receiver,message);
-         }  
-         return;
-     }else{
-         if (socket.readyState == WebSocket.OPEN) {
-             //判断是发送好友消息还是群消息
-             if(To.type=="friend"){
-            	 layim.setChatStatus('<span style="color:#FF5722;">对方正在输入。。。</span>');
-                 sendMsg(message,receiver,null)
-             }else{
-                 sendMsg(message,null,receiver)
-             }   
-         }   
-     }
+    var message = {
+    	mine: {
+    		id:data.mine.id,
+    		name: data.mine.username,
+    		avatar: data.mine.avatar,
+    		content: data.mine.content
+    	},
+    	to:{
+    		id:data.to.id,
+    		username: data.to.username,
+    		sign: data.to.sign,
+    		type: data.to.type,
+    		avatar: data.to.avatar
+    	}
+    }
+    
+    socket.send(JSON.stringify(message));
     
     //演示自动回复
     //setTimeout(function(){
@@ -305,7 +273,6 @@ layui.use('layim', function(layim){
   //监听聊天窗口的切换
   layim.on('chatChange', function(res){
     var type = res.data.type;
-    console.log(res.data.id)
     if(type === 'friend'){
       //模拟标注好友状态
       //layim.setChatStatus('<span style="color:#FF5722;">在线</span>');
@@ -342,38 +309,6 @@ layui.use('layim', function(layim){
 		        ,timestamp: new Date().getTime()
 		      });
 		    }
-		    ,messageAudio: function(){
-		      //接受音频消息
-		      layim.getMessage({
-		        username: "林心如"
-		        ,avatar: "//tp3.sinaimg.cn/1223762662/180/5741707953/0"
-		        ,id: "76543"
-		        ,type: "friend"
-		        ,content: "audio[http://gddx.sc.chinaz.com/Files/DownLoad/sound1/201510/6473.mp3]"
-		        ,timestamp: new Date().getTime()
-		      });
-		    }
-		    ,messageVideo: function(){
-		      //接受视频消息
-		      layim.getMessage({
-		        username: "林心如"
-		        ,avatar: "//tp3.sinaimg.cn/1223762662/180/5741707953/0"
-		        ,id: "76543"
-		        ,type: "friend"
-		        ,content: "video[http://www.w3school.com.cn//i/movie.ogg]"
-		        ,timestamp: new Date().getTime()
-		      });
-		    }
-		    ,messageTemp: function(){
-		      //接受临时会话消息
-		      layim.getMessage({
-		        username: "小酱"
-		        ,avatar: "//tva1.sinaimg.cn/crop.7.0.736.736.50/bd986d61jw8f5x8bqtp00j20ku0kgabx.jpg"
-		        ,id: "198909151014"
-		        ,type: "friend"
-		        ,content: "临时："+ new Date().getTime()
-		      });
-		    }
 		    ,add: function(){
 		      //实际使用时数据由动态获得
 		      layim.add({
@@ -387,7 +322,6 @@ layui.use('layim', function(layim){
 		          }, function(){
 		            layer.close(index);
 		          });
-		          
 		          //通知对方
 		          /*
 		          $.post('/im-applyFriend/', {
@@ -547,6 +481,24 @@ layui.use('layim', function(layim){
 		      });
 		    }
 		  };
+  //监听签名修改
+  layim.on('sign', function(sign){
+	  $.ajax({
+	      type : "post",
+	      url : "${pageContext.request.contextPath}/user/changeSign.action",
+	      data : "sign=" + sign,
+	      dataType : "text",
+	      success : function(resData) {
+	    	  if (resData === 'success') {
+	              layer.msg('修改个性签名成功', {
+	                  icon: 1
+	                });
+	    	  } else {
+                  layer.msg('修改个性签名失败');
+	    	  }
+	      }
+	  });
+  });
 });
 </script>
 </body>

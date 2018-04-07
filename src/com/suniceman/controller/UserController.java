@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.suniceman.po.BigGroup;
 import com.suniceman.po.Group;
+import com.suniceman.po.GroupUser;
 import com.suniceman.po.JsonResult;
 import com.suniceman.po.User;
 import com.suniceman.service.BigGroupService;
@@ -176,5 +177,86 @@ public class UserController {
             request.setAttribute("errorMessage", "邮箱或密保不正确!");
             return "login/forgot";
         }
+    }
+    
+    @RequestMapping("/changeSign")
+    public @ResponseBody
+    String changeSign(HttpServletRequest request, HttpServletResponse resopnse)
+            throws Exception {
+        resopnse.setCharacterEncoding("UTF-8");
+        String sign = request.getParameter("sign");
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        user.setSign(sign);
+        userService.changeSign(user);
+        return "success";
+    }
+    
+    // 删除好友
+    @RequestMapping("/deleteFriend")
+    public @ResponseBody
+    String deleteFriend(HttpServletRequest request, HttpServletResponse resopnse)
+            throws Exception {
+        resopnse.setCharacterEncoding("UTF-8");
+        String friendId = request.getParameter("friendId");
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        
+        // 互相删除好友
+        GroupUser groupUser = new GroupUser();
+        groupUser.setUserId(Integer.parseInt(friendId));
+        groupUser.setOwnId(user.getId());
+        userService.deleteFriend(groupUser);
+        // 从对方的好友列表中讲自己删除
+        GroupUser groupUser2 = new GroupUser();
+        groupUser2.setUserId(user.getId());
+        groupUser2.setOwnId(Integer.parseInt(friendId));
+        userService.deleteFriend(groupUser2);
+        
+        return "success";
+    }
+    
+    // 分组重命名
+    @RequestMapping("/groupRename")
+    public @ResponseBody
+    String groupRename(HttpServletRequest request, HttpServletResponse resopnse)
+            throws Exception {
+        resopnse.setCharacterEncoding("UTF-8");
+        String groupId = request.getParameter("groupId");
+        String groupName = request.getParameter("groupName");
+        
+        Group group = new Group();
+        group.setId(Integer.parseInt(groupId));
+        group.setGroupname(groupName);
+        groupService.renameGroup(group);
+        return "success";
+    }
+    
+    // 新建分组
+    @RequestMapping("/createGroup")
+    public @ResponseBody
+    String createGroup(HttpServletRequest request, HttpServletResponse resopnse)
+            throws Exception {
+        resopnse.setCharacterEncoding("UTF-8");
+        String groupName = request.getParameter("groupName");
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        Group group = new Group();
+        group.setUserId(user.getId());
+        group.setGroupname(groupName);
+        groupService.createGroup(group);
+        return "success";
+    }
+    
+    // 删除分组
+    @RequestMapping("/deleteGroup")
+    public @ResponseBody
+    String deleteGroup(HttpServletRequest request, HttpServletResponse resopnse)
+            throws Exception {
+        resopnse.setCharacterEncoding("UTF-8");
+        int id = Integer.parseInt(request.getParameter("groupId"));
+        groupService.deleteFriendsById(id);
+        groupService.deleteById(id);
+        return "success";
     }
 }

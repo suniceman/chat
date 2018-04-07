@@ -265,9 +265,6 @@ layui.define(['layer', 'laytpl', 'upload'], function(exports){
         ,'<span class="layui-icon layim-tool-face" title="选择表情" layim-event="face">&#xe60c;</span>'
         ,'{{# if(d.base && d.base.uploadImage){ }}'
         ,'{{# }; }}'
-        ,'{{# if(d.base && d.base.uploadFile){ }}'
-        ,'<span class="layui-icon layim-tool-image" title="发送文件" layim-event="image" data-type="file">&#xe61d;<input type="file" name="file"></span>'
-         ,'{{# }; }}'
          ,'{{# if(d.base && d.base.isAudio){ }}'
         ,'<span class="layui-icon layim-tool-audio" title="发送网络音频" layim-event="media" data-type="audio">&#xe6fc;</span>'
          ,'{{# }; }}'
@@ -1935,27 +1932,114 @@ layui.define(['layer', 'laytpl', 'upload'], function(exports){
     	layer.closeAll('tips');
     },menu_delete: function(othis, e) {
 	      //删除一个好友
+    	var friendId = parseInt(global.othis[0].className.replace('layim-friend', ''));
     	removeList({
-	        id: parseInt(global.othis[0].className.replace('layim-friend', ''))
+	        id: friendId
 	        ,type: 'friend'
 	      });
-    	
-    	layer.msg('好友删除成功',{
-	        icon: 1
-	      });
+	  $.ajax({
+	      type : "post",
+	      url : "/chat/user/deleteFriend.action",
+	      data : "friendId=" + friendId,
+	      dataType : "text",
+	      success : function(resData) {
+	    	  if (resData === 'success') {
+    		  	layer.msg('好友删除成功',{
+    		        icon: 1
+    		      });
+	    	  } else {
+	              layer.msg('好友删除失败');
+	    	  }
+	      }
+	  });
     	layer.closeAll('tips');
     },menu_moveto: function(othis, e) {
     	layer.msg('移动好友');
     	layer.closeAll('tips');
     },group_rename: function(othis, e) {
-    	console.log(global.othis[0].id)
-    	layer.msg('分组重命名');
+    	var groupId = global.othis[0].id
+    	layer.alert(
+    			'<input type="text" class="layui-input" id="newGroupName" placeholder="请输入新的分组名称">', {
+    		        title: '分组重命名'
+    		            ,shade: false
+    		 },function(index){
+    			var groupName = $("#newGroupName").val()
+			    $.ajax({
+			        type : "post",
+			        url : "/chat/user/groupRename.action",
+			        data : "groupId=" + groupId +"&groupName=" + groupName,
+			        dataType : "text",
+			        success : function(resData) {
+			          if (resData === 'success') {
+		    		  	layer.msg('分组重命名成功',{
+		    		        icon: 1
+		    		      });
+		    		  	window. location.reload()
+			    	  } else {
+			              layer.msg('分组重命名失败');
+			    	  }
+			        }
+			    });
+    			
+    			
+    		  layer.close(index);
+    		});  
     	layer.closeAll('tips');
     },group_deleted: function(othis, e) {
-    	layer.msg('删除分组');
+    	var groupId = global.othis[0].id
+    	layer.alert(
+    			'分组下的好友也会一并删除, 确定要删除分组吗？', {
+    		        title: '删除分组'
+    		            ,shade: false
+    		 },function(index){
+			    $.ajax({
+			        type : "post",
+			        url : "/chat/user/deleteGroup.action",
+			        data : "groupId=" + groupId,
+			        dataType : "text",
+			        success : function(resData) {
+			          if (resData === 'success') {
+		    		  	layer.msg('好友分组删除成功',{
+		    		        icon: 1
+		    		      });
+		    		  	window. location.reload()
+			    	  } else {
+			              layer.msg('好友分组删除失败');
+			    	  }
+			        }
+			    });
+    			
+    			
+    		  layer.close(index);
+    		});  
     	layer.closeAll('tips');
     },group_created: function(othis, e) {
-    	layer.msg('创建分组');
+    	layer.alert(
+    			'<input type="text" class="layui-input" id="newGroupName" placeholder="请输入分组名称">', {
+    		        title: '新建分组'
+    		            ,shade: false
+    		 },function(index){
+    			var groupName = $("#newGroupName").val()
+			    $.ajax({
+			        type : "post",
+			        url : "/chat/user/createGroup.action",
+			        data : "groupName=" + groupName,
+			        dataType : "text",
+			        success : function(resData) {
+			          if (resData === 'success') {
+		    		  	layer.msg('新建分组成功',{
+		    		        icon: 1
+		    		      });
+		    		  	window. location.reload()
+			    	  } else {
+			              layer.msg('新建分组失败');
+			    	  }
+			        }
+			    });
+    			
+    			
+    		  layer.close(index);
+    		});  
     	layer.closeAll('tips');
     },big_group_delete: function (othis, e) {
     	layer.msg('退出群组');

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.suniceman.mapper.UserMapper;
+import com.suniceman.po.GroupUser;
 import com.suniceman.po.User;
 import com.suniceman.service.UserService;
 
@@ -37,5 +38,17 @@ public class UserServiceImpl implements UserService {
     public List<User> findByGroupId(int groupId) {
         // TODO Auto-generated method stub
         return userMapper.findByGroupId(groupId);
+    }
+    
+    @Override
+    public void changeSign(User user) {
+        // TODO Auto-generated method stub
+        userMapper.changeSign(user);
+    }
+    
+    @Override
+    public void deleteFriend(GroupUser groupUser) {
+        // TODO Auto-generated method stub
+        userMapper.deleteFriend(groupUser);
     }
 }

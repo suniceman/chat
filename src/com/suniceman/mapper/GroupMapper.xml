@@ -10,5 +10,25 @@
     <insert id="createDefaultGroup" parameterType="int">
         insert into `group`(groupname, createdTime,userId)values('我的好友', NOW(), #{userId})
     </insert>
+    
+    <update id="renameGroup" parameterType="Group">
+        update `group` set groupname=#{groupname} where id = #{id}
+    </update>
+    
+    <insert id="createGroup" parameterType="Group">
+        insert into `group`(groupname, createdTime,userId)values(#{groupname}, NOW(), #{userId})
+    </insert>
+    
+    <select id="findById" parameterType="int" resultType="Group">
+        SELECT * FROM `group` WHERE id = #{id}
+    </select>
+    
+    <delete id="deleteById" parameterType="int">
+        delete from `group` where id = #{id}
+    </delete>
+    
+    <delete id="deleteFriendsById" parameterType="int">
+        delete from `group_user` where groupId = #{id}
+    </delete>
 </mapper>
 

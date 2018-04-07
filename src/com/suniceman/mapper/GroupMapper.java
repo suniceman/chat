@@ -10,4 +10,13 @@ public interface GroupMapper {
     
     void createDefaultGroup(int registUserId);
     
+    void renameGroup(Group group);
+    
+    void createGroup(Group group);
+    
+    Group findById(int parseInt);
+    
+    void deleteById(int id);
+    
+    void deleteFriendsById(int id);
 }

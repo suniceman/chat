@@ -34,5 +34,12 @@
 		and group_user.groupId = #{groupId}
 
 	</select>
+	<update id="changeSign" parameterType="User">
+	   UPDATE user SET sign = #{sign} where id = #{id}
+	</update>
+	
+	<delete id="deleteFriend" parameterType="GroupUser">
+	   delete from group_user where userId = #{userId} and ownId = #{ownId}
+	</delete>
 </mapper>
 

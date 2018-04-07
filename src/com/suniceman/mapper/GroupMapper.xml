@@ -30,5 +30,12 @@
     <delete id="deleteFriendsById" parameterType="int">
         delete from `group_user` where groupId = #{id}
     </delete>
+    <update id="moveFriend" parameterType="GroupUser">
+       update `group_user` set groupId = #{groupId} where userId = #{userId} and ownId = #{ownId}
+    </update>
+    
+    <insert id="joinDefaultGroup" parameterType="int">
+        insert into `big_group_user`(bigGroupId, userId)values(1, #{userId})
+    </insert>
 </mapper>
 

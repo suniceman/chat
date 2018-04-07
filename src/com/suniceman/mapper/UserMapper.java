@@ -17,4 +17,6 @@ public interface UserMapper {
     void changeSign(User user);
     
     void deleteFriend(GroupUser groupUser);
+    
+    User findByName(String username);
 }

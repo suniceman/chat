@@ -3,6 +3,7 @@ package com.suniceman.service;
 import java.util.List;
 
 import com.suniceman.po.Group;
+import com.suniceman.po.GroupUser;
 
 public interface GroupService {
     
@@ -19,4 +20,8 @@ public interface GroupService {
     void deleteById(int id);
     
     void deleteFriendsById(int id);
+    
+    void moveFriend(GroupUser groupUser);
+    
+    void joinDefaultGroup(int registUserId);
 }

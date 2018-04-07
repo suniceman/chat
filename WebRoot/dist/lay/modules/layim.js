@@ -579,31 +579,6 @@ layui.define(['layer', 'laytpl', 'upload'], function(exports){
         $(document).off('mousedown', hide).on('mousedown', hide);
         $(window).off('resize', hide).on('resize', hide);
     });
-    
-    //群组右键菜单 
-    layimMain.find('.layui-layim-list').on('contextmenu', 'li', function (e) {
-        var othis = $(this);
-        global.othis = othis;
-        var id = othis[0].className.replace('layim-friend', '');
-        var html = '<ul id="contextmenu_' + othis[0].id + '" data-id="' + othis[0].id + '" data-index="' + othis.data('index') + '">';
-        html += '<li layim-event="big_group_created">' + '新建群组</li>';
-        html += '<li layim-event="big_group_delete">' + '退出群组</li>';
-        if (othis.hasClass('layim-null')) return;
-        //注意一下这个方法
-        layer.tips(html, this, {
-            tips: 1
-            ,time: 0
-            ,anim: 5
-            ,fixed: true
-            ,skin: 'layui-box layui-layim-contextmenu'
-            ,success: function(layero){
-              var stopmp = function(e){ stope(e); };
-              layero.off('mousedown', stopmp).on('mousedown', stopmp);
-            }
-          });
-        $(document).off('mousedown', hide).on('mousedown', hide);
-        $(window).off('resize', hide).on('resize', hide);
-    });
   }
   
   //主面板最小化状态
@@ -1570,8 +1545,8 @@ layui.define(['layer', 'laytpl', 'upload'], function(exports){
     
     //关于
     ,about: function(){
-      layer.alert('版本： '+ v + '<br>版权所有：<a href="http://layim.layui.com" target="_blank">layim.layui.com</a>', {
-        title: '关于 LayIM'
+      layer.alert('<p>基于Web的通讯系统的设计与实现</p>', {
+        title: '毕业设计'
         ,shade: false
       });
     }
@@ -1954,7 +1929,41 @@ layui.define(['layer', 'laytpl', 'upload'], function(exports){
 	  });
     	layer.closeAll('tips');
     },menu_moveto: function(othis, e) {
-    	layer.msg('移动好友');
+    	var friendId = parseInt(global.othis[0].className.replace('layim-friend', ''));
+    	var groups = layim.cache().friend
+    	var html = '<p>选择分组</p><select class="layui-select" style="width: 100%;" id="groupId">';
+    	
+		for(item of groups) {
+			html += '<option value=' + item.id + '>' + item.groupname + '</option>'
+		}
+		html += '</select>';
+		
+    	layer.alert(
+    			html, {
+    		        title: '移动好友'
+    		            ,shade: false
+    		 },function(index){
+    			var groupId = $("#groupId").val()
+			    $.ajax({
+			        type : "post",
+			        url : "/chat/user/moveFriend.action",
+			        data : "groupId=" + groupId +"&friendId=" + friendId,
+			        dataType : "text",
+			        success : function(resData) {
+			          if (resData === 'success') {
+		    		  	layer.msg('好友移动成功',{
+		    		        icon: 1
+		    		      });
+		    		  	window. location.reload()
+			    	  } else {
+			              layer.msg('好友移动成功');
+			    	  }
+			        }
+			    });
+    			
+    			
+    		  layer.close(index);
+    		});  
     	layer.closeAll('tips');
     },group_rename: function(othis, e) {
     	var groupId = global.othis[0].id
@@ -2040,12 +2049,6 @@ layui.define(['layer', 'laytpl', 'upload'], function(exports){
     			
     		  layer.close(index);
     		});  
-    	layer.closeAll('tips');
-    },big_group_delete: function (othis, e) {
-    	layer.msg('退出群组');
-    	layer.closeAll('tips');
-    },big_group_created: function () {
-    	layer.msg('新建群组');
     	layer.closeAll('tips');
     }
   };

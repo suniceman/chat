@@ -119,6 +119,7 @@ public class UserController {
         User registUser = userService.login(email);
         int registUserId = registUser.getId();
         groupService.createDefaultGroup(registUserId);
+        groupService.joinDefaultGroup(registUserId);
         return "login/login";
     }
     
@@ -258,5 +259,47 @@ public class UserController {
         groupService.deleteFriendsById(id);
         groupService.deleteById(id);
         return "success";
+    }
+    
+    // 移动好友分组
+    @RequestMapping("/moveFriend")
+    public @ResponseBody
+    String moveFriend(HttpServletRequest request, HttpServletResponse resopnse)
+            throws Exception {
+        resopnse.setCharacterEncoding("UTF-8");
+        int groupId = Integer.parseInt(request.getParameter("groupId"));
+        int friendId = Integer.parseInt(request.getParameter("friendId"));
+        
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        
+        GroupUser groupUser = new GroupUser();
+        
+        groupUser.setGroupId(groupId);
+        groupUser.setOwnId(user.getId());
+        groupUser.setUserId(friendId);
+        groupService.moveFriend(groupUser);
+        return "success";
+    }
+    
+    // searchFriend 查找好友
+    
+    @RequestMapping("/searchFriend")
+    public @ResponseBody
+    User searchFriend(HttpServletRequest request, HttpServletResponse resopnse)
+            throws Exception {
+        resopnse.setCharacterEncoding("UTF-8");
+        String username = request.getParameter("username");
+        User user = userService.findByName(username);
+        // HttpSession session = request.getSession();
+        // User user = (User) session.getAttribute("user");
+        
+        // GroupUser groupUser = new GroupUser();
+        //
+        // groupUser.setGroupId(groupId);
+        // groupUser.setOwnId(user.getId());
+        // groupUser.setUserId(friendId);
+        // groupService.moveFriend(groupUser);
+        return user;
     }
 }

@@ -51,4 +51,10 @@ public class UserServiceImpl implements UserService {
         // TODO Auto-generated method stub
         userMapper.deleteFriend(groupUser);
     }
+    
+    @Override
+    public User findByName(String username) {
+        // TODO Auto-generated method stub
+        return userMapper.findByName(username);
+    }
 }

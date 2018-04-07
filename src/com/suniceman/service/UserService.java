@@ -18,4 +18,6 @@ public interface UserService {
     void changeSign(User user);
     
     void deleteFriend(GroupUser groupUser);
+    
+    User findByName(String username);
 }

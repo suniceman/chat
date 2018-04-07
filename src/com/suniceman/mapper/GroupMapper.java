@@ -3,6 +3,7 @@ package com.suniceman.mapper;
 import java.util.List;
 
 import com.suniceman.po.Group;
+import com.suniceman.po.GroupUser;
 
 public interface GroupMapper {
     
@@ -19,4 +20,8 @@ public interface GroupMapper {
     void deleteById(int id);
     
     void deleteFriendsById(int id);
+    
+    void moveFriend(GroupUser groupUser);
+    
+    void joinDefaultGroup(int registUserId);
 }

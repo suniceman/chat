@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.suniceman.mapper.GroupMapper;
 import com.suniceman.po.Group;
+import com.suniceman.po.GroupUser;
 import com.suniceman.service.GroupService;
 
 @Service
@@ -55,5 +56,17 @@ public class GroupServiceImpl implements GroupService {
     public void deleteFriendsById(int id) {
         // TODO Auto-generated method stub
         groupMapper.deleteFriendsById(id);
+    }
+    
+    @Override
+    public void moveFriend(GroupUser groupUser) {
+        // TODO Auto-generated method stub
+        groupMapper.moveFriend(groupUser);
+    }
+    
+    @Override
+    public void joinDefaultGroup(int registUserId) {
+        // TODO Auto-generated method stub
+        groupMapper.joinDefaultGroup(registUserId);
     }
 }

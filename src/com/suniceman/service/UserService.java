@@ -20,4 +20,6 @@ public interface UserService {
     void deleteFriend(GroupUser groupUser);
     
     User findByName(String username);
+    
+    List<User> findAll();
 }

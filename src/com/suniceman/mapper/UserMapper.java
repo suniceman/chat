@@ -19,4 +19,6 @@ public interface UserMapper {
     void deleteFriend(GroupUser groupUser);
     
     User findByName(String username);
+    
+    List<User> findAll();
 }

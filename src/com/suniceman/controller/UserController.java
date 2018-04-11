@@ -102,6 +102,26 @@ public class UserController {
         return jsonResult;
     }
     
+    @ResponseBody
+    @RequestMapping("/getAllUsers")
+    public Object getAllUsers(HttpServletRequest request,
+            HttpServletResponse resopnse) throws Exception {
+        JsonResult jsonResult = new JsonResult();
+        jsonResult.setCode(0);
+        jsonResult.setMsg("");
+        Map data = new HashMap();
+        List<User> userList = userService.findAll();
+        List<User> userList2 = new ArrayList<User>();
+        for (User user : userList) {
+            user.setAvatar("/cdn/" + user.getAvatar());
+            userList2.add(user);
+        }
+        data.put("members", userList.size());
+        data.put("list", userList2);
+        jsonResult.setData(data);
+        return jsonResult;
+    }
+    
     @RequestMapping("/regist")
     private String register(User user, HttpServletRequest request,
             MultipartFile pictureFile) throws IllegalStateException,

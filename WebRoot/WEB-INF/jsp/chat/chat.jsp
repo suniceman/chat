@@ -74,19 +74,6 @@ var im = {
 layui.use('layim', function(layim){
   window.layim = layim;
   $ = layui.jquery;
-  //演示自动回复
-  var autoReplay = [
-    '您好，我现在有事不在，一会再和您联系。', 
-    '你没发错吧？face[微笑] ',
-    '洗澡中，请勿打扰，偷窥请购票，个体四十，团体八折，订票电话：一般人我不告诉他！face[哈哈] ',
-    '你好，我是主人的美女秘书，有什么事就跟我说吧，等他回来我会转告他的。face[心] face[心] face[心] ',
-    'face[威武] face[威武] face[威武] face[威武] ',
-    '<（@￣︶￣@）>',
-    '你要和我说话？你真的要和我说话？你确定自己想说吗？你一定非说不可吗？那你说吧，这是自动回复。',
-    'face[黑线]  你慢慢说，别急……',
-    '(*^__^*) face[嘻嘻] ，是贤心吗？'
-  ];
-  
   //基础配置
   layim.config({
 
@@ -96,25 +83,9 @@ layui.use('layim', function(layim){
       ,data: {}
     }
     
-    //或采用以下方式初始化接口
-    /*
-    ,init: {
-      mine: {
-        "username": "LayIM体验者" //我的昵称
-        ,"id": "100000123" //我的ID
-        ,"status": "online" //在线状态 online：在线、hide：隐身
-        ,"remark": "在深邃的编码世界，做一枚轻盈的纸飞机" //我的签名
-        ,"avatar": "a.jpg" //我的头像
-      }
-      ,friend: []
-      ,group: []
-    }
-    */
-    
-
     //查看群员接口
     ,members: {
-      url: '${pageContext.request.contextPath}/json/getMembers.json'
+      url: '${pageContext.request.contextPath}/user/getAllUsers.action'
       ,data: {}
     }
     
@@ -145,7 +116,7 @@ layui.use('layim', function(layim){
     ,title: '在线聊天' //自定义主面板最小化时的标题
     //,right: '100px' //主面板相对浏览器右侧距离
     //,minRight: '90px' //聊天面板最小化时相对浏览器右侧距离
-    ,initSkin: '5.jpg' //1-5 设置初始背景
+    ,initSkin: '3.jpg' //1-5 设置初始背景
     //,skin: ['aaa.jpg'] //新增皮肤
     //,isfriend: false //是否开启好友
     //,isgroup: false //是否开启群组
@@ -158,21 +129,6 @@ layui.use('layim', function(layim){
     ,chatLog: layui.cache.dir + 'css/modules/layim/html/chatLog.html' //聊天记录页面地址，若不开启，剔除该项即可
     
   });
-
-  /*
-  layim.chat({
-    name: '在线客服-小苍'
-    ,type: 'kefu'
-    ,avatar: 'http://tva3.sinaimg.cn/crop.0.0.180.180.180/7f5f6861jw1e8qgp5bmzyj2050050aa8.jpg'
-    ,id: -1
-  });
-  layim.chat({
-    name: '在线客服-心心'
-    ,type: 'kefu'
-    ,avatar: 'http://tva1.sinaimg.cn/crop.219.144.555.555.180/0068iARejw8esk724mra6j30rs0rstap.jpg'
-    ,id: -2
-  });
-  layim.setChatMin();*/
 
   //监听在线状态的切换事件
   layim.on('online', function(data){
@@ -196,55 +152,47 @@ layui.use('layim', function(layim){
 
     //console.log(res.mine);
     
-    layim.msgbox(5); //模拟消息盒子有新消息，实际使用时，一般是动态获得
+    layim.msgbox(1); //模拟消息盒子有新消息，实际使用时，一般是动态获得
   });
 
   //监听发送消息
   layim.on('sendMessage', function(data){
-    var my = data.mine;
-    var message = my.content;
-    var To = data.to;
-    var message = {
-    	mine: {
-    		id:data.mine.id,
-    		name: data.mine.username,
-    		avatar: data.mine.avatar,
-    		content: data.mine.content
-    	},
-    	to:{
-    		id:data.to.id,
-    		username: data.to.username,
-    		sign: data.to.sign,
-    		type: data.to.type,
-    		avatar: data.to.avatar
-    	}
-    }
-    
+	var type = data.to.type;
+	if (type === 'friend') {
+	    var message = {
+	            mine: {
+	                id:data.mine.id,
+	                name: data.mine.username,
+	                avatar: data.mine.avatar,
+	                content: data.mine.content
+	            },
+	            to:{
+	                id:data.to.id,
+	                username: data.to.username,
+	                sign: data.to.sign,
+	                type: data.to.type,
+	                avatar: data.to.avatar
+	            }
+	        }
+	} else {
+	    var message = {
+	            mine: {
+	                id:data.mine.id,
+	                name: data.mine.username,
+	                avatar: data.mine.avatar,
+	                content: data.mine.content
+	            },
+	            to:{
+	                id:data.to.id,
+	                groupname: data.to.groupname,
+	                sign: data.to.sign,
+	                type: data.to.type,
+	                avatar: data.to.avatar
+	            }
+	        }
+	}
+	
     socket.send(JSON.stringify(message));
-    
-    //演示自动回复
-    //setTimeout(function(){
-    //  var obj = {};
-    //  if(To.type === 'group'){
-    //    obj = {
-    //      username: '模拟群员'+(Math.random()*100|0)
-    //      ,avatar: layui.cache.dir + 'images/face/'+ (Math.random()*72|0) + '.gif'
-   //       ,id: To.id
-   //       ,type: To.type
-   //       ,content: autoReplay[Math.random()*9|0]
-   //     }
-    //  } else {
-    //    obj = {
-    //      username: To.name
-   //       ,avatar: To.avatar
-   //       ,id: To.id
-   //       ,type: To.type
-    //      ,content: autoReplay[Math.random()*9|0]
-   //     }
-   //     layim.setChatStatus('<span style="color:#FF5722;">在线</span>');
-    //  }
-   //   layim.getMessage(obj);
-  //  }, 1000);
   });
 
   //监听查看群员
@@ -254,19 +202,6 @@ layui.use('layim', function(layim){
   
   //监听聊天窗口的切换
   layim.on('chatChange', function(res){
-    var type = res.data.type;
-    if(type === 'friend'){
-      //模拟标注好友状态
-      //layim.setChatStatus('<span style="color:#FF5722;">在线</span>');
-    } else if(type === 'group'){
-      //模拟系统消息
-      layim.getMessage({
-        system: true
-        ,id: res.data.id
-        ,type: "group"
-        ,content: '模拟群员'+(Math.random()*100|0) + '加入群聊'
-      });
-    }
   });
   
   var $ = layui.jquery, active = {
@@ -485,4 +420,3 @@ layui.use('layim', function(layim){
 </script>
 </body>
 </html>
-

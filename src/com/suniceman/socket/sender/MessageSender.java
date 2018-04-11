@@ -1,10 +1,15 @@
 package com.suniceman.socket.sender;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.websocket.Session;
 
 import net.sf.json.JSONArray;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.suniceman.po.SocketUser;
 import com.suniceman.po.ToClientMessageResult;
@@ -13,6 +18,8 @@ import com.suniceman.po.ToClientTextMessage;
 import com.suniceman.po.ToDBMessage;
 import com.suniceman.po.ToServerMessageMine;
 import com.suniceman.po.ToServerTextMessage;
+import com.suniceman.po.User;
+import com.suniceman.service.UserService;
 import com.suniceman.socket.LayIMChatType;
 import com.suniceman.util.LayIMFactory;
 
@@ -21,7 +28,19 @@ import com.suniceman.util.LayIMFactory;
  * 如果是单聊，直接从缓存取出对象的session进行消息发送，群聊则需要从缓存中取出该群里所有人的id进行遍历发送消息，
  * 遍历过后需要优化在线与否，假如100人中只有一个人在线，则会浪费99次（未做优化）
  */
+@Component
 public class MessageSender {
+    
+    @Autowired
+    private UserService userService;
+    
+    public static MessageSender messageSender;
+    
+    @PostConstruct
+    public void init() {
+        messageSender = this;
+    }
+    
     // 发送信息业务逻辑
     public void sendMessage(ToServerTextMessage message) {
         
@@ -33,18 +52,23 @@ public class MessageSender {
         String toClientMessage = getToClientMessage(message);
         
         System.out.println(toClientMessage);
-        
+        System.out.println(userService + "1212123412");
         System.out.println("当前消息类型是" + type);
         // 不能用==做比较，因为一个是static final 值，另外一个是在对象中 == 为false
         if (type.equals(LayIMChatType.GROUP)) {
-            // 群聊，需要遍历该群组里的所有人
-            // 第一次从缓存中取userId，否则，从数据库中取在存到缓存中
+            List<User> userList = messageSender.userService.findAll();
+            for (User user : userList) {
+                // 过滤掉自己
+                if (!sendUserId.equals(user.getId())) {
+                    sendMessage(user.getId(), toClientMessage);
+                }
+            }
         } else {
             sendMessage(toUserId, toClientMessage);
         }
         
         // 最后保存到数据库
-        saveMessage(message);
+        // saveMessage(message);
         
     }
     
@@ -73,12 +97,10 @@ public class MessageSender {
         
         dbMessage.setSendUserId(message.getMine().getId());
         dbMessage.setAddtime(new Date().getTime());
-        dbMessage.setChatType(message.getTo().getType()
-                .equals(LayIMChatType.FRIEND) ? LayIMChatType.CHATFRIEND
+        dbMessage.setChatType(message.getTo().getType().equals(LayIMChatType.FRIEND) ? LayIMChatType.CHATFRIEND
                 : LayIMChatType.CHATGROUP);
         dbMessage.setMsgType(1);// 这个参数先不管就是普通聊天记录
-        long groupId = getGroupId(message.getMine().getId(), message.getTo()
-                .getId(), message.getTo().getType());
+        long groupId = getGroupId(message.getMine().getId(), message.getTo().getId(), message.getTo().getType());
         dbMessage.setGroupId(groupId);
         dbMessage.setMsg(message.getMine().getContent());
         

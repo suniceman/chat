@@ -40,10 +40,48 @@ layui.use(['layim', 'laypage'], function(){
         data : "username=" + username,
         dataType : "text",
         success : function(resData) {
-          layer.msg(resData);
+            if (resData) {
+		        var myFriend  = $.parseJSON(resData)
+		          layim.add({
+		            type: 'friend'
+		            ,username: myFriend.username
+		            ,avatar: "/cdn/" + myFriend.avatar
+		            ,submit: function(group, remark, index){
+                         //通知对方
+                       $.ajax({
+                           type : "post",
+                           url : "/chat/user/saveRequest.action",
+                           data : "groupId=" + group +"&remark=" + remark +"&friendId=" + myFriend.id,
+                           dataType : "json",
+                           success : function(resData) {
+                             if (resData === 'success') {
+		                      layer.msg('好友申请已发送，请等待对方确认', {
+		                        icon: 1
+		                        ,shade: 0.5
+		                      }, function(){
+		                        layer.close(index);
+		                      });
+                             } else {
+                              layer.msg('好友申请失败', {
+                                icon: 1
+                                ,shade: 0.5
+                              });
+                             }
+                           }
+                       });
+		              layer.msg('好友申请已发送，请等待对方确认', {
+		                icon: 1
+		                ,shade: 0.5
+		              }, function(){
+		                layer.close(index);
+		              });
+		            }
+		          });
+            } else {
+				layer.msg('此人不存在， 请确认后重新搜索！');
+            }
         }
     });
-    layer.msg('1212');
   })
   //一些添加好友请求之类的交互参见文档
   

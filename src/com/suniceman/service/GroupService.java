@@ -24,4 +24,6 @@ public interface GroupService {
     void moveFriend(GroupUser groupUser);
     
     void joinDefaultGroup(int registUserId);
+    
+    void addFriend(GroupUser mineGroupUser);
 }

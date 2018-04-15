@@ -69,4 +69,10 @@ public class GroupServiceImpl implements GroupService {
         // TODO Auto-generated method stub
         groupMapper.joinDefaultGroup(registUserId);
     }
+    
+    @Override
+    public void addFriend(GroupUser mineGroupUser) {
+        // TODO Auto-generated method stub
+        groupMapper.addFriend(mineGroupUser);
+    }
 }

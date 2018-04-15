@@ -79,7 +79,7 @@ layui.use(['layim', 'flow'], function(){
     
     //实际部署时，请将下述 getmsg.json 改为你的接口地址
     
-    $.get('getmsg.json', {
+    $.get('/chat/user/getmsg.action', {
       page: page || 1
     }, function(res){
       if(res.code != 0){
@@ -134,45 +134,32 @@ layui.use(['layim', 'flow'], function(){
         ,avatar: user.avatar
         ,group: parent.layui.layim.cache().friend //获取好友分组数据
         ,submit: function(group, index){
-          
-          //将好友追加到主面板
-          parent.layui.layim.addList({
-            type: 'friend'
-            ,avatar: user.avatar //好友头像
-            ,username: user.username //好友昵称
-            ,groupid: group //所在的分组id
-            ,id: uid //好友ID
-            ,sign: user.sign //好友签名
-          });
-          parent.layer.close(index);
-          othis.parent().html('已同意');
-        
-        
-          //实际部署时，请开启下述注释，并改成你的接口地址
-          /*
-          $.post('/im/agreeFriend', {
-            uid: uid //对方用户ID
-            ,from_group: from_group //对方设定的好友分组
-            ,group: group //我设定的好友分组
-          }, function(res){
-            if(res.code != 0){
-              return layer.msg(res.msg);
-            }
-
-            //将好友追加到主面板
-            parent.layui.layim.addList({
-              type: 'friend'
-              ,avatar: user.avatar //好友头像
-              ,username: user.username //好友昵称
-              ,groupid: group //所在的分组id
-              ,id: uid //好友ID
-              ,sign: user.sign //好友签名
+            $.ajax({
+                type : "post",
+                url : "/chat/user/agreeFriend.action",
+                data : "uid=" + uid +"&groupId=" + group,
+                dataType : "text",
+                success : function(resData) {
+                  if (resData === 'success') {
+                      //将好友追加到主面板
+                      parent.layui.layim.addList({
+                          type: 'friend'
+                          ,avatar: user.avatar //好友头像
+                          ,username: user.username //好友昵称
+                          ,groupid: group //所在的分组id
+                          ,id: uid //好友ID
+                          ,sign: user.sign //好友签名
+                        });
+                        parent.layer.close(index);
+                        othis.parent().html('已同意');
+                  } else {
+                   layer.msg('好友添加失败', {
+                     icon: 1
+                     ,shade: 0.5
+                   });
+                  }
+                }
             });
-            parent.layer.close(index);
-            othis.parent().html('已同意');
-          });
-          */
-          
         }
       });
     }
@@ -181,18 +168,22 @@ layui.use(['layim', 'flow'], function(){
     ,refuse: function(othis){
       var li = othis.parents('li')
       ,uid = li.data('uid');
-
-      layer.confirm('确定拒绝吗？', function(index){
-        $.post('/im/refuseFriend', {
-          uid: uid //对方用户ID
-        }, function(res){
-          if(res.code != 0){
-            return layer.msg(res.msg);
-          }
-          layer.close(index);
-          othis.parent().html('<em>已拒绝</em>');
-        });
-      });
+          $.ajax({
+              type : "post",
+              url : "/chat/user/refuseFriend.action",
+              data : "uid=" + uid,
+              dataType : "text",
+              success : function(resData) {
+                if (resData === 'success') {
+                      othis.parent().html('<em>已拒绝<em>');
+                } else {
+                 layer.msg('拒绝好友失败', {
+                   icon: 1
+                   ,shade: 0.5
+                 });
+                }
+              }
+          });
     }
   };
 

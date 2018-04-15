@@ -11,14 +11,15 @@ import net.sf.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.suniceman.po.Message;
 import com.suniceman.po.SocketUser;
 import com.suniceman.po.ToClientMessageResult;
 import com.suniceman.po.ToClientMessageType;
 import com.suniceman.po.ToClientTextMessage;
-import com.suniceman.po.ToDBMessage;
 import com.suniceman.po.ToServerMessageMine;
 import com.suniceman.po.ToServerTextMessage;
 import com.suniceman.po.User;
+import com.suniceman.service.MessageService;
 import com.suniceman.service.UserService;
 import com.suniceman.socket.LayIMChatType;
 import com.suniceman.util.LayIMFactory;
@@ -33,6 +34,8 @@ public class MessageSender {
     
     @Autowired
     private UserService userService;
+    @Autowired
+    private MessageService messageService;
     
     public static MessageSender messageSender;
     
@@ -46,20 +49,18 @@ public class MessageSender {
         
         int toUserId = message.getTo().getId();
         // 获取发送人
-        String sendUserId = Integer.toString(message.getMine().getId());
+        int sendUserId = message.getMine().getId();
         String type = message.getTo().getType();
         // 消息提前生成，否则进行循环内生成会浪费资源
         String toClientMessage = getToClientMessage(message);
         
-        System.out.println(toClientMessage);
-        System.out.println(userService + "1212123412");
         System.out.println("当前消息类型是" + type);
         // 不能用==做比较，因为一个是static final 值，另外一个是在对象中 == 为false
         if (type.equals(LayIMChatType.GROUP)) {
             List<User> userList = messageSender.userService.findAll();
             for (User user : userList) {
                 // 过滤掉自己
-                if (!sendUserId.equals(user.getId())) {
+                if (sendUserId != user.getId()) {
                     sendMessage(user.getId(), toClientMessage);
                 }
             }
@@ -68,7 +69,7 @@ public class MessageSender {
         }
         
         // 最后保存到数据库
-        // saveMessage(message);
+        saveMessage(message);
         
     }
     
@@ -92,18 +93,28 @@ public class MessageSender {
     
     // 保存到数据库
     // 需要加入到队列
-    private void saveMessage(ToServerTextMessage message) {
-        ToDBMessage dbMessage = new ToDBMessage();
-        
-        dbMessage.setSendUserId(message.getMine().getId());
-        dbMessage.setAddtime(new Date().getTime());
-        dbMessage.setChatType(message.getTo().getType().equals(LayIMChatType.FRIEND) ? LayIMChatType.CHATFRIEND
-                : LayIMChatType.CHATGROUP);
-        dbMessage.setMsgType(1);// 这个参数先不管就是普通聊天记录
-        long groupId = getGroupId(message.getMine().getId(), message.getTo().getId(), message.getTo().getType());
-        dbMessage.setGroupId(groupId);
-        dbMessage.setMsg(message.getMine().getContent());
-        
+    private void saveMessage(ToServerTextMessage toServerTextMessage) {
+        Message message = new Message();
+        User mine = messageSender.userService.findById(toServerTextMessage.getMine().getId());
+        if (toServerTextMessage.getTo().getType().equals("group")) {
+            message.setToUserName("聊天室");
+        } else {
+            User friend = messageSender.userService.findById(toServerTextMessage.getTo().getId());
+            if (friend == null) {
+                message.setToUserName("已删除");
+            } else {
+                message.setToUserName(friend.getUsername());
+            }
+        }
+        message.setFromeUserId(toServerTextMessage.getMine().getId());
+        message.setFromAvatar(toServerTextMessage.getMine().getAvatar());
+        message.setContent(toServerTextMessage.getMine().getContent());
+        message.setFromUserName(mine.getUsername());
+        message.setToUserId(toServerTextMessage.getTo().getId());
+        message.setToAvatar(toServerTextMessage.getTo().getAvatar());
+        message.setType(toServerTextMessage.getTo().getType());
+        // 将聊天信息保存到DB
+        messageSender.messageService.saveMessage(message);
     }
     
     // 根据客户端发送来的消息，构造发送出去的消息
@@ -117,8 +128,8 @@ public class MessageSender {
         ToClientTextMessage toClientTextMessage = new ToClientTextMessage();
         
         ToServerMessageMine mine = message.getMine();
-        
-        toClientTextMessage.setUsername(mine.getUsername());
+        User myInfo = messageSender.userService.findById(mine.getId());
+        toClientTextMessage.setUsername(myInfo.getUsername());
         toClientTextMessage.setAvatar(mine.getAvatar());
         toClientTextMessage.setContent(mine.getContent());
         toClientTextMessage.setType(message.getTo().getType());
@@ -139,26 +150,4 @@ public class MessageSender {
         return JSONArray.fromObject(result).toString();
     }
     
-    // 生成对应的groupId
-    private long getGroupId(int sendUserId, int toUserId, String type) {
-        
-        // 如果是组内聊天，直接返回组id，否则返回 两个id的组合
-        if (type.equals(LayIMChatType.GROUP)) {
-            return toUserId;
-        }
-        
-        String sendUserIdStr = Integer.toString(sendUserId);
-        String toUserIdStr = Integer.toString(toUserId);
-        
-        String groupIdStr = "";
-        // 按照固定次序生成相应的聊天组
-        if (sendUserId > toUserId) {
-            groupIdStr = sendUserIdStr + toUserIdStr;
-        } else {
-            groupIdStr = toUserIdStr + sendUserIdStr;
-        }
-        
-        long groupId = Long.parseLong(groupIdStr);
-        return groupId;
-    }
 }

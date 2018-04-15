@@ -126,7 +126,6 @@ layui.use('layim', function(layim){
     
     ,msgbox: layui.cache.dir + 'css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
     ,find: layui.cache.dir + 'css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
-    ,chatLog: layui.cache.dir + 'css/modules/layim/html/chatLog.html' //聊天记录页面地址，若不开启，剔除该项即可
     
   });
 
@@ -149,10 +148,10 @@ layui.use('layim', function(layim){
   
   //监听layim建立就绪
   layim.on('ready', function(res){
-
-    //console.log(res.mine);
-    
-    layim.msgbox(1); //模拟消息盒子有新消息，实际使用时，一般是动态获得
+    $.get('/chat/user/getMessageCount.action',
+    function(res){
+    	layim.msgbox(res);//消息盒子有新消息
+      });
   });
 
   //监听发送消息

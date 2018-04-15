@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.suniceman.mapper.MessageBoxMapper">
+
+	<insert id="save" parameterType="MessageBox">
+		insert into messageBox(userId,friendId,status,remark, groupId, createdTime)
+		values(#{userId},#{friendId},#{status},#{remark}, #{groupId}, Now())
+	</insert>
+	
+	<select id="getMyMessage" resultType="MessageBox" parameterType="int">
+	   select * from messageBox where friendId = #{friendId} and status = 0
+	</select>
+	<update id="agreeFriend" parameterType="MessageBox">
+	  update messageBox set status = 1 where friendId = #{friendId} and userId = #{userId}
+	</update>
+	
+	<select id="findByFriendIdAndUserId" parameterType="MessageBox" resultType="MessageBox">
+	   select * from messageBox where friendId = #{friendId} and userId = #{userId} and status = 0
+	</select>
+	
+    <update id="refuseFriend" parameterType="MessageBox">
+      update messageBox set status = 2 where friendId = #{friendId} and userId = #{userId}
+    </update>
+    
+    <select id="getMessageCount" resultType="int" parameterType="int">
+        select count(*) from messageBox  where friendId = #{id} and status = 0
+    </select>
+</mapper>
+

@@ -37,5 +37,9 @@
     <insert id="joinDefaultGroup" parameterType="int">
         insert into `big_group_user`(bigGroupId, userId)values(1, #{userId})
     </insert>
+    
+    <insert id="addFriend" parameterType="GroupUser">
+      insert into `group_user`(groupId, userId, ownId)values(#{groupId}, #{userId}, #{ownId})
+    </insert>
 </mapper>
 

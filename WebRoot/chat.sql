@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50520
 File Encoding         : 65001
 
-Date: 2018-04-07 19:53:53
+Date: 2018-04-15 18:12:30
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -31,7 +31,7 @@ CREATE TABLE `big_group` (
 -- ----------------------------
 -- Records of big_group
 -- ----------------------------
-INSERT INTO `big_group` VALUES ('1', '3fa7cfe2-de0f-4114-8ef8-f6fe114121d7.jpg', '群组', '1', '2018-04-05 22:32:12');
+INSERT INTO `big_group` VALUES ('1', 'a88b7efa-56ef-4e09-b77f-4973fcf17ddc.jpg', '聊天室', '1', '2018-04-05 22:32:12');
 
 -- ----------------------------
 -- Table structure for big_group_user
@@ -42,13 +42,14 @@ CREATE TABLE `big_group_user` (
   `bigGroupId` int(11) DEFAULT NULL,
   `userId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of big_group_user
 -- ----------------------------
-INSERT INTO `big_group_user` VALUES ('1', '1', '1');
-INSERT INTO `big_group_user` VALUES ('2', '1', '2');
+INSERT INTO `big_group_user` VALUES ('6', '1', '17');
+INSERT INTO `big_group_user` VALUES ('7', '1', '18');
+INSERT INTO `big_group_user` VALUES ('8', '1', '19');
 
 -- ----------------------------
 -- Table structure for group
@@ -57,20 +58,18 @@ DROP TABLE IF EXISTS `group`;
 CREATE TABLE `group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `groupname` varchar(255) DEFAULT NULL,
-  `createdTime` datetime DEFAULT NULL,
+  `createdtime` datetime DEFAULT NULL,
   `userId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of group
 -- ----------------------------
-INSERT INTO `group` VALUES ('1', '冬天', '2018-04-05 22:31:23', '1');
-INSERT INTO `group` VALUES ('2', '我的好友', '2018-04-06 00:55:06', '2');
-INSERT INTO `group` VALUES ('11', '冬天不太冷', '2018-04-07 19:38:11', '1');
-INSERT INTO `group` VALUES ('10', '秋天', '2018-04-07 19:34:00', '1');
-INSERT INTO `group` VALUES ('9', null, '2018-04-07 19:27:55', '0');
-INSERT INTO `group` VALUES ('6', '小蜜蜂', '2018-04-07 18:58:35', '2');
+INSERT INTO `group` VALUES ('1', '我的好友', '2018-04-15 17:45:20', '17');
+INSERT INTO `group` VALUES ('2', '我的好友', '2018-04-15 17:46:13', '18');
+INSERT INTO `group` VALUES ('3', '我的好友', '2018-04-15 17:46:51', '19');
+INSERT INTO `group` VALUES ('4', '公司内部分组', '2018-04-15 17:53:52', '17');
 
 -- ----------------------------
 -- Table structure for group_user
@@ -82,13 +81,68 @@ CREATE TABLE `group_user` (
   `userId` int(11) DEFAULT NULL,
   `ownId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of group_user
 -- ----------------------------
-INSERT INTO `group_user` VALUES ('1', '1', '2', '1');
-INSERT INTO `group_user` VALUES ('2', '2', '1', '2');
+INSERT INTO `group_user` VALUES ('11', '1', '18', '17');
+INSERT INTO `group_user` VALUES ('12', '1', '19', '17');
+INSERT INTO `group_user` VALUES ('13', '2', '17', '18');
+INSERT INTO `group_user` VALUES ('14', '3', '17', '19');
+
+-- ----------------------------
+-- Table structure for message
+-- ----------------------------
+DROP TABLE IF EXISTS `message`;
+CREATE TABLE `message` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `fromeUserId` int(11) DEFAULT NULL,
+  `fromAvatar` varchar(255) DEFAULT NULL,
+  `content` varchar(255) DEFAULT NULL,
+  `fromUserName` varchar(255) DEFAULT NULL,
+  `toUserId` int(255) DEFAULT NULL,
+  `toAvatar` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `toUserName` varchar(255) DEFAULT NULL,
+  `sendTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of message
+-- ----------------------------
+INSERT INTO `message` VALUES ('42', '18', '/cdn/f63555cb-738f-4465-bc73-aa7859f09d7c.jpg', '马老板最近还好吗？', '刘涛', '17', '/cdn/16482036-cb4a-4693-a255-0c67fb785018.jpg', 'friend', '马小云', '2018-04-15 17:54:42');
+INSERT INTO `message` VALUES ('43', '17', '/cdn/16482036-cb4a-4693-a255-0c67fb785018.jpg', '混的一般般把， 你最近有什么新的影视作品吗？', '马小云', '18', '/cdn/f63555cb-738f-4465-bc73-aa7859f09d7c.jpg', 'friend', '刘涛', '2018-04-15 17:55:21');
+INSERT INTO `message` VALUES ('44', '18', '/cdn/f63555cb-738f-4465-bc73-aa7859f09d7c.jpg', '大家晚上好啊', '刘涛', '1', '/cdn/a88b7efa-56ef-4e09-b77f-4973fcf17ddc.jpg', 'group', '聊天室', '2018-04-15 17:55:56');
+INSERT INTO `message` VALUES ('45', '18', '/cdn/f63555cb-738f-4465-bc73-aa7859f09d7c.jpg', 'face[思考] ', '刘涛', '1', '/cdn/a88b7efa-56ef-4e09-b77f-4973fcf17ddc.jpg', 'group', '聊天室', '2018-04-15 17:56:02');
+INSERT INTO `message` VALUES ('46', '17', '/cdn/16482036-cb4a-4693-a255-0c67fb785018.jpg', '你好啊', '马小云', '1', '/cdn/a88b7efa-56ef-4e09-b77f-4973fcf17ddc.jpg', 'group', '聊天室', '2018-04-15 17:56:14');
+INSERT INTO `message` VALUES ('47', '18', '/cdn/f63555cb-738f-4465-bc73-aa7859f09d7c.jpg', 'face[拜拜] ', '刘涛', '17', '/cdn/16482036-cb4a-4693-a255-0c67fb785018.jpg', 'friend', '马小云', '2018-04-15 18:00:40');
+INSERT INTO `message` VALUES ('48', '17', '/cdn/16482036-cb4a-4693-a255-0c67fb785018.jpg', 'face[兔子] ', '马小云', '18', '/cdn/f63555cb-738f-4465-bc73-aa7859f09d7c.jpg', 'friend', '刘涛', '2018-04-15 18:00:46');
+INSERT INTO `message` VALUES ('49', '18', '/cdn/f63555cb-738f-4465-bc73-aa7859f09d7c.jpg', '马大哥你的签名很帅气啊', '刘涛', '17', '/cdn/16482036-cb4a-4693-a255-0c67fb785018.jpg', 'friend', '马小云', '2018-04-15 18:02:15');
+INSERT INTO `message` VALUES ('50', '17', '/cdn/16482036-cb4a-4693-a255-0c67fb785018.jpg', 'face[抱抱] ', '马小云', '18', '/cdn/f63555cb-738f-4465-bc73-aa7859f09d7c.jpg', 'friend', '刘涛', '2018-04-15 18:02:34');
+INSERT INTO `message` VALUES ('51', '17', '/cdn/16482036-cb4a-4693-a255-0c67fb785018.jpg', '你最近再干些什么呢 ', '马小云', '1', '/cdn/a88b7efa-56ef-4e09-b77f-4973fcf17ddc.jpg', 'group', '聊天室', '2018-04-15 18:02:54');
+INSERT INTO `message` VALUES ('52', '17', '/cdn/16482036-cb4a-4693-a255-0c67fb785018.jpg', '大家晚上有没有空啊？ 大家一起吃个饭', '马小云', '1', '/cdn/a88b7efa-56ef-4e09-b77f-4973fcf17ddc.jpg', 'group', '聊天室', '2018-04-15 18:03:07');
+INSERT INTO `message` VALUES ('53', '18', '/cdn/f63555cb-738f-4465-bc73-aa7859f09d7c.jpg', '好啊好啊， 大家晚上不见不散', '刘涛', '1', '/cdn/a88b7efa-56ef-4e09-b77f-4973fcf17ddc.jpg', 'group', '聊天室', '2018-04-15 18:03:59');
+
+-- ----------------------------
+-- Table structure for messagebox
+-- ----------------------------
+DROP TABLE IF EXISTS `messagebox`;
+CREATE TABLE `messagebox` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) DEFAULT NULL,
+  `friendId` int(11) DEFAULT NULL,
+  `status` int(11) DEFAULT NULL,
+  `remark` varchar(255) DEFAULT NULL,
+  `groupId` int(11) DEFAULT NULL,
+  `createdTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of messagebox
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for user
@@ -108,13 +162,12 @@ CREATE TABLE `user` (
   `createdTime` datetime DEFAULT NULL,
   `roleId` int(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES ('1', 'susu', '13145211216@163.com', '21232f297a57a5a743894a0e4a801fc3', '500.00', '0cb90a4f-af42-424a-a5a0-6bf061ff7857.jpg', '你好吗', '1', '2', '3', '2018-04-02 22:50:39', '2');
-INSERT INTO `user` VALUES ('2', '南京', '824522972@qq.com', '21232f297a57a5a743894a0e4a801fc3', '500.00', '3fa7cfe2-de0f-4114-8ef8-f6fe114121d7.jpg', '123', '1', '2', '3', '2018-04-05 22:11:52', '2');
-INSERT INTO `user` VALUES ('4', '1', '123@qq.com', '-3b35bdc75f46dc7df233af65908a7b65', '500.00', '3fa7cfe2-de0f-4114-8ef8-f6fe114121d7.jpg', null, '1', '1', '1', '2018-04-06 00:45:49', '2');
-INSERT INTO `user` VALUES ('5', '1', '12345678@qq.com', '-3b35bdc75f46dc7df233af65908a7b65', '500.00', 'a1d519b2-9de5-47bd-86ac-1021434cdef6.jpg', null, '1', '1', '1', '2018-04-06 00:47:54', '2');
-INSERT INTO `user` VALUES ('6', '12', '1234@qq.com', '21232f297a57a5a743894a0e4a801fc3', '500.00', 'ab316a48-5cc6-4228-a1eb-f36299aad133.jpg', null, '1', '2', '3', '2018-04-06 00:55:06', '2');
+INSERT INTO `user` VALUES ('18', '刘涛', 'test2@163.com', '21232f297a57a5a743894a0e4a801fc3', '500.00', 'f63555cb-738f-4465-bc73-aa7859f09d7c.jpg', '谁是天底下最美的人', '刘涛', '马云', 'T1001', '2018-04-15 17:46:13', '2');
+INSERT INTO `user` VALUES ('17', '马小云', 'test1@163.com', '21232f297a57a5a743894a0e4a801fc3', '500.00', '16482036-cb4a-4693-a255-0c67fb785018.jpg', '天下没有难写的代码', '马小云', '马化腾', 'Y1001', '2018-04-15 17:45:20', '2');
+INSERT INTO `user` VALUES ('19', '佟丽娅', 'test3@163.com', '21232f297a57a5a743894a0e4a801fc3', '500.00', 'fd0aeb49-44ab-4646-b250-0591472eaa78.jpg', null, '佟丽娅', '刘涛', 'T001', '2018-04-15 17:46:51', '2');
+INSERT INTO `user` VALUES ('1', 'admin', null, '21232f297a57a5a743894a0e4a801fc3', '500.00', null, null, null, null, null, '2018-04-15 17:46:51', '1');

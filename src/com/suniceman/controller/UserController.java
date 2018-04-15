@@ -22,9 +22,11 @@ import com.suniceman.po.BigGroup;
 import com.suniceman.po.Group;
 import com.suniceman.po.GroupUser;
 import com.suniceman.po.JsonResult;
+import com.suniceman.po.MessageBox;
 import com.suniceman.po.User;
 import com.suniceman.service.BigGroupService;
 import com.suniceman.service.GroupService;
+import com.suniceman.service.MessageBoxService;
 import com.suniceman.service.UserService;
 import com.suniceman.util.Md5Util;
 
@@ -40,6 +42,9 @@ public class UserController {
     
     @Autowired
     private BigGroupService bigGroupService;
+    
+    @Autowired
+    private MessageBoxService messageBoxService;
     
     @RequestMapping("/login")
     public String login() {
@@ -84,8 +89,7 @@ public class UserController {
         }
         data.put("friend", friends);
         
-        List<BigGroup> bigGroupList = bigGroupService
-                .findBigGroupByUserId(userId);
+        List<BigGroup> bigGroupList = bigGroupService.findBigGroupByUserId(userId);
         
         List groups = new ArrayList();
         if (!bigGroupList.isEmpty() && bigGroupList.size() != 0) {
@@ -103,9 +107,43 @@ public class UserController {
     }
     
     @ResponseBody
+    @RequestMapping("/getmsg")
+    public Object getmsg(HttpServletRequest request) {
+        Map result = new HashMap();
+        result.put("code", 0);
+        result.put("pages", 1);
+        List message = new ArrayList();
+        
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        List<MessageBox> messageBoxList = messageBoxService.getMyMessage(user.getId());
+        
+        if (!messageBoxList.isEmpty() && messageBoxList.size() != 0) {
+            for (MessageBox messageBox : messageBoxList) {
+                User requersUser = userService.findById(messageBox.getUserId());
+                Map info = new HashMap();
+                info.put("id", messageBox.getId());
+                info.put("content", "申请添加你为好友");
+                info.put("from", messageBox.getUserId());
+                info.put("remark", messageBox.getRemark());
+                info.put("time", "时间" + messageBox.getCreatedTime());
+                Map requersUserMap = new HashMap();
+                requersUserMap.put("id", requersUser.getId());
+                requersUserMap.put("avatar", "/cdn/" + requersUser.getAvatar());
+                requersUserMap.put("username", requersUser.getUsername());
+                requersUserMap.put("sign", requersUser.getSign());
+                info.put("user", requersUserMap);
+                message.add(info);
+            }
+        }
+        result.put("data", message);
+        
+        return result;
+    }
+    
+    @ResponseBody
     @RequestMapping("/getAllUsers")
-    public Object getAllUsers(HttpServletRequest request,
-            HttpServletResponse resopnse) throws Exception {
+    public Object getAllUsers(HttpServletRequest request, HttpServletResponse resopnse) throws Exception {
         JsonResult jsonResult = new JsonResult();
         jsonResult.setCode(0);
         jsonResult.setMsg("");
@@ -123,12 +161,10 @@ public class UserController {
     }
     
     @RequestMapping("/regist")
-    private String register(User user, HttpServletRequest request,
-            MultipartFile pictureFile) throws IllegalStateException,
-            IOException {
+    private String register(User user, HttpServletRequest request, MultipartFile pictureFile)
+            throws IllegalStateException, IOException {
         String pictureName = UUID.randomUUID()
-                + pictureFile.getOriginalFilename().substring(
-                        pictureFile.getOriginalFilename().lastIndexOf("."));
+                + pictureFile.getOriginalFilename().substring(pictureFile.getOriginalFilename().lastIndexOf("."));
         String pathPicture = "/home/cdn/" + pictureName;
         File filePicture = new File(pathPicture);
         pictureFile.transferTo(filePicture);
@@ -144,8 +180,7 @@ public class UserController {
     }
     
     @RequestMapping("/dologin")
-    public String doLogin(User user, HttpServletRequest request,
-            HttpServletResponse response) {
+    public String doLogin(User user, HttpServletRequest request, HttpServletResponse response) {
         String email = user.getEmail();
         String loginPwd = Md5Util.getMd5(user.getPassword());
         User loginUser = userService.login(email);
@@ -165,8 +200,7 @@ public class UserController {
     }
     
     @RequestMapping("/check")
-    public String check(User user, HttpServletRequest request,
-            HttpServletResponse response) {
+    public String check(User user, HttpServletRequest request, HttpServletResponse response) {
         String email = user.getEmail();
         user.setPassword(Md5Util.getMd5(user.getPassword()));
         User loginUser = userService.login(email);
@@ -202,8 +236,7 @@ public class UserController {
     
     @RequestMapping("/changeSign")
     public @ResponseBody
-    String changeSign(HttpServletRequest request, HttpServletResponse resopnse)
-            throws Exception {
+    String changeSign(HttpServletRequest request, HttpServletResponse resopnse) throws Exception {
         resopnse.setCharacterEncoding("UTF-8");
         String sign = request.getParameter("sign");
         HttpSession session = request.getSession();
@@ -216,8 +249,7 @@ public class UserController {
     // 删除好友
     @RequestMapping("/deleteFriend")
     public @ResponseBody
-    String deleteFriend(HttpServletRequest request, HttpServletResponse resopnse)
-            throws Exception {
+    String deleteFriend(HttpServletRequest request, HttpServletResponse resopnse) throws Exception {
         resopnse.setCharacterEncoding("UTF-8");
         String friendId = request.getParameter("friendId");
         HttpSession session = request.getSession();
@@ -240,8 +272,7 @@ public class UserController {
     // 分组重命名
     @RequestMapping("/groupRename")
     public @ResponseBody
-    String groupRename(HttpServletRequest request, HttpServletResponse resopnse)
-            throws Exception {
+    String groupRename(HttpServletRequest request, HttpServletResponse resopnse) throws Exception {
         resopnse.setCharacterEncoding("UTF-8");
         String groupId = request.getParameter("groupId");
         String groupName = request.getParameter("groupName");
@@ -256,8 +287,7 @@ public class UserController {
     // 新建分组
     @RequestMapping("/createGroup")
     public @ResponseBody
-    String createGroup(HttpServletRequest request, HttpServletResponse resopnse)
-            throws Exception {
+    String createGroup(HttpServletRequest request, HttpServletResponse resopnse) throws Exception {
         resopnse.setCharacterEncoding("UTF-8");
         String groupName = request.getParameter("groupName");
         HttpSession session = request.getSession();
@@ -272,8 +302,7 @@ public class UserController {
     // 删除分组
     @RequestMapping("/deleteGroup")
     public @ResponseBody
-    String deleteGroup(HttpServletRequest request, HttpServletResponse resopnse)
-            throws Exception {
+    String deleteGroup(HttpServletRequest request, HttpServletResponse resopnse) throws Exception {
         resopnse.setCharacterEncoding("UTF-8");
         int id = Integer.parseInt(request.getParameter("groupId"));
         groupService.deleteFriendsById(id);
@@ -284,8 +313,7 @@ public class UserController {
     // 移动好友分组
     @RequestMapping("/moveFriend")
     public @ResponseBody
-    String moveFriend(HttpServletRequest request, HttpServletResponse resopnse)
-            throws Exception {
+    String moveFriend(HttpServletRequest request, HttpServletResponse resopnse) throws Exception {
         resopnse.setCharacterEncoding("UTF-8");
         int groupId = Integer.parseInt(request.getParameter("groupId"));
         int friendId = Integer.parseInt(request.getParameter("friendId"));
@@ -306,20 +334,95 @@ public class UserController {
     
     @RequestMapping("/searchFriend")
     public @ResponseBody
-    User searchFriend(HttpServletRequest request, HttpServletResponse resopnse)
-            throws Exception {
+    User searchFriend(HttpServletRequest request, HttpServletResponse resopnse) throws Exception {
         resopnse.setCharacterEncoding("UTF-8");
         String username = request.getParameter("username");
         User user = userService.findByName(username);
-        // HttpSession session = request.getSession();
-        // User user = (User) session.getAttribute("user");
         
-        // GroupUser groupUser = new GroupUser();
-        //
-        // groupUser.setGroupId(groupId);
-        // groupUser.setOwnId(user.getId());
-        // groupUser.setUserId(friendId);
-        // groupService.moveFriend(groupUser);
         return user;
     }
+    
+    @RequestMapping("/saveRequest")
+    public @ResponseBody
+    String saveRequest(HttpServletRequest request, HttpServletResponse resopnse) throws Exception {
+        resopnse.setCharacterEncoding("UTF-8");
+        int groupId = Integer.parseInt(request.getParameter("groupId"));
+        String remark = request.getParameter("remark");
+        int friendId = Integer.parseInt(request.getParameter("friendId"));
+        
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        
+        MessageBox messageBox = new MessageBox();
+        messageBox.setFriendId(friendId);
+        messageBox.setStatus(0);
+        messageBox.setGroupId(groupId);
+        messageBox.setRemark(remark);
+        messageBox.setUserId(user.getId());
+        messageBoxService.save(messageBox);
+        return "success";
+    }
+    
+    // 添加好友
+    @RequestMapping("/agreeFriend")
+    public @ResponseBody
+    String agreeFriend(HttpServletRequest request, HttpServletResponse resopnse) throws Exception {
+        resopnse.setCharacterEncoding("UTF-8");
+        int uid = Integer.parseInt(request.getParameter("uid"));
+        int groupId = Integer.parseInt(request.getParameter("groupId"));
+        HttpSession session = request.getSession();
+        // 当前在线的用户
+        User user = (User) session.getAttribute("user");
+        MessageBox messageBox = new MessageBox();
+        messageBox.setUserId(uid);
+        messageBox.setFriendId(user.getId());
+        
+        // 添加我的好友分组
+        GroupUser mineGroupUser = new GroupUser();
+        mineGroupUser.setGroupId(groupId);
+        mineGroupUser.setOwnId(user.getId());
+        mineGroupUser.setUserId(uid);
+        groupService.addFriend(mineGroupUser);
+        
+        // 添加好友的好友分组
+        GroupUser friendGroupUser = new GroupUser();
+        MessageBox messageBox2 = messageBoxService.findByFriendIdAndUserId(messageBox);
+        friendGroupUser.setGroupId(messageBox2.getGroupId());
+        friendGroupUser.setOwnId(uid);
+        friendGroupUser.setUserId(user.getId());
+        
+        groupService.addFriend(friendGroupUser);
+        
+        messageBoxService.agreeFriend(messageBox);
+        
+        return "success";
+    }
+    
+    @RequestMapping("/refuseFriend")
+    public @ResponseBody
+    String refuseFriend(HttpServletRequest request, HttpServletResponse resopnse) throws Exception {
+        resopnse.setCharacterEncoding("UTF-8");
+        int uid = Integer.parseInt(request.getParameter("uid"));
+        
+        HttpSession session = request.getSession();
+        // 当前在线的用户
+        User user = (User) session.getAttribute("user");
+        MessageBox messageBox = new MessageBox();
+        messageBox.setUserId(uid);
+        messageBox.setFriendId(user.getId());
+        
+        messageBoxService.refuseFriend(messageBox);
+        return "success";
+    }
+    
+    @RequestMapping("/getMessageCount")
+    public @ResponseBody
+    int getMessageCount(HttpServletRequest request, HttpServletResponse resopnse) throws Exception {
+        HttpSession session = request.getSession();
+        // 当前在线的用户
+        User user = (User) session.getAttribute("user");
+        
+        return messageBoxService.getMessageCount(user.getId());
+    }
+    
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.suniceman.mapper.UserMapper;
 import com.suniceman.po.GroupUser;
 import com.suniceman.po.User;
+import com.suniceman.po.UserVo;
 import com.suniceman.service.UserService;
 
 @Service
@@ -62,5 +63,53 @@ public class UserServiceImpl implements UserService {
     public List<User> findAll() {
         // TODO Auto-generated method stub
         return userMapper.findAll();
+    }
+    
+    @Override
+    public User findById(int userId) {
+        // TODO Auto-generated method stub
+        return userMapper.findById(userId);
+    }
+    
+    @Override
+    public User loginBack(String username) {
+        // TODO Auto-generated method stub
+        return userMapper.loginBack(username);
+    }
+    
+    @Override
+    public int showCount(UserVo userVo) {
+        // TODO Auto-generated method stub
+        return userMapper.showCount(userVo);
+    }
+    
+    @Override
+    public List<User> showByPage(UserVo userVo) {
+        // TODO Auto-generated method stub
+        return userMapper.showByPage(userVo);
+    }
+    
+    @Override
+    public void delete(int id) {
+        // TODO Auto-generated method stub
+        userMapper.delete(id);
+    }
+    
+    @Override
+    public void changeAdminPassword(User admin) {
+        // TODO Auto-generated method stub
+        userMapper.changeAdminPassword(admin);
+    }
+    
+    @Override
+    public User checkName(String name) {
+        // TODO Auto-generated method stub
+        return userMapper.checkName(name);
+    }
+    
+    @Override
+    public void updateUser(User user) {
+        // TODO Auto-generated method stub
+        userMapper.updateUser(user);
     }
 }

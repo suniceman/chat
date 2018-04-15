@@ -24,4 +24,6 @@ public interface GroupMapper {
     void moveFriend(GroupUser groupUser);
     
     void joinDefaultGroup(int registUserId);
+    
+    void addFriend(GroupUser mineGroupUser);
 }

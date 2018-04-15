@@ -17,6 +17,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <body>
 <div class="cotn_principal">
   <div class="cont_centrar">
+    <div style="width: 200px; color: red; margin: 0 auto; padding-top: 30px;">${errorMessage }</div>
     <div class="cont_login">
       <div class="cont_info_log_sign_up">
         <div class="col_md_login">
@@ -42,8 +43,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
         <form action="${pageContext.request.contextPath}/user/dologin.action" method="post">
 	        <div class="cont_form_login"> <a href="#" onclick="ocultar_login_sign_up()" ><i class="material-icons">&#xE5C4;</i></a>
 	          <h2>登陆</h2>
-	          <input type="text" name="email" placeholder="邮箱" />
-	          <input type="password" name="password" placeholder="密码" />
+	          <input type="text" name="email" placeholder="邮箱" required="required" />
+	          <input type="password" name="password" placeholder="密码" required="required" />
 	          <button class="btn_login" onclick="cambiar_login()">登陆</button>
 	          <button class="btn_login">
 	           <a style="display: inline-block;" href="${pageContext.request.contextPath}/user/forgot.action">忘记密码?</a>

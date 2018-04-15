@@ -47,8 +47,48 @@
 	</select>
 	
 	<select id="findAll" resultType="User">
-	   select * from user
+	   select * from user where roleId = 2
 	</select>
 	
+	<select id="findById" resultType="User" parameterType="int">
+       select * from user where id = #{userId}
+    </select>
+    <select id="loginBack" parameterType="String" resultType="User">
+        select * from user where username=#{username} and roleId = 1
+    </select>
+
+    <select id="showCount" parameterType="com.suniceman.po.UserVo" resultType="int">
+        SELECT COUNT(*) FROM user WHERE 1 = 1
+        <if test="username != null and username != ''">
+            AND username LIKE '%${username}%'
+        </if>
+    </select>
+
+    <select id="showByPage" parameterType="com.suniceman.po.UserVo" resultType="User">
+        SELECT * FROM user WHERE 1 = 1
+        <if test="username != null and username != ''">
+            AND username LIKE '%${username}%'
+        </if>
+        ORDER BY roleId ASC
+        LIMIT #{pageNum}, 10 
+    </select>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM user WHERE id = #{id}
+    </delete>
+    
+    <update id="changeAdminPassword" parameterType="User">
+        UPDATE user SET
+        password = #{password} WHERE id = #{id}
+    </update>
+    
+    <select id="checkName" parameterType="String" resultType="User">
+        select * from user where
+        username=#{username}
+    </select>
+    
+    <update id="updateUser" parameterType="User">
+    update user set username = #{username}, password = #{password} where id = #{id}
+    </update>
 </mapper>
 

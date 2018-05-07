@@ -91,14 +91,12 @@ layui.use('layim', function(layim){
     
     //上传图片接口
     ,uploadImage: {
-      url: '/upload/image' //（返回的数据格式见下文）
-      ,type: '' //默认post
+      url: '/chat/upload/image.action' //（返回的数据格式见下文）
     } 
     
     //上传文件接口
     ,uploadFile: {
-      url: '/upload/file' //（返回的数据格式见下文）
-      ,type: '' //默认post
+      url: '/chat/upload/file.action' //（返回的数据格式见下文）
     }
     
     ,isAudio: true //开启聊天工具栏音频
